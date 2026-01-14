@@ -1,1 +1,5 @@
-db_connection.php
+.env
+storage/
+!storage/.gitkeep
+public/uploads/*
+!public/uploads/.gitkeep

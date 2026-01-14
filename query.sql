@@ -1,49 +1,39 @@
--- Создание базы данных
-CREATE DATABASE web_catalog;
-
--- Использование созданной базы данных
+CREATE DATABASE IF NOT EXISTS web_catalog CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE web_catalog;
 
--- Создание таблицы "Пользователи"
-CREATE TABLE users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL,
-    password VARCHAR(255) NOT NULL
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(64) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Создание таблицы "Категории"
-CREATE TABLE categories (
-    category_id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
+CREATE TABLE IF NOT EXISTS categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Создание таблицы "Товары"
-CREATE TABLE products (
-    product_id INT AUTO_INCREMENT PRIMARY KEY,
-    category_id INT,
-    name VARCHAR(100) NOT NULL,
+CREATE TABLE IF NOT EXISTS products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    category_id INT NOT NULL,
+    name VARCHAR(140) NOT NULL,
     description TEXT,
-    price DECIMAL(10, 2),
+    price DECIMAL(10, 2) DEFAULT 0,
     image_path VARCHAR(255),
-    FOREIGN KEY (category_id) REFERENCES categories(category_id)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT fk_products_category FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
 );
 
--- Создание таблицы "Отзывы"
-CREATE TABLE reviews (
-    review_id INT AUTO_INCREMENT PRIMARY KEY,
-    product_id INT,
-    user_id INT,
-    rating TINYINT,
+CREATE TABLE IF NOT EXISTS reviews (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT NOT NULL,
+    rating TINYINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
     comment TEXT,
-    FOREIGN KEY (product_id) REFERENCES products(product_id),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_reviews_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
--- Создание таблицы "Заказы"
-CREATE TABLE orders (
-    order_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT,
-    order_date DATE,
-    total_amount DECIMAL(10, 2),
-    FOREIGN KEY (user_id) REFERENCES users(user_id)
-);
+CREATE INDEX IF NOT EXISTS idx_products_category ON products(category_id);
+CREATE INDEX IF NOT EXISTS idx_reviews_product ON reviews(product_id);
