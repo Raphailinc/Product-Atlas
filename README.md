@@ -2,6 +2,8 @@
 
 [English](README.md) · [Русский](README.ru.md)
 
+**Archived learning project.** Preserved as part of my learning history. For current backend work, visit my [profile](https://github.com/Raphailinc).
+
 An API-first portfolio application for product records, categories and reviews, with a small HTML/JavaScript interface.
 
 ## What it does
